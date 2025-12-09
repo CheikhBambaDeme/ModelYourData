@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Analysis - {{ file.original_filename }} | ModelYourData{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/analysis.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="analysis-container">
+    <!-- File Info Header -->
+    <div class="file-header">
+        <div class="file-header-info">
+            <h1 class="file-title">
+                <i class="fas fa-file-csv"></i>
+                {{ file.original_filename }}
+            </h1>
+            <span class="file-meta">
+                Uploaded: {{ file.uploaded_at|date:"M d, Y H:i" }} |
+                Size: {{ file.file_size|filesizeformat }}
+            </span>
+        </div>
+        <div class="file-header-actions">
+            <a href="{% url 'dataanalysis:landing' %}" class="btn btn-secondary">
+                <i class="fas fa-plus"></i> New Upload
+            </a>
+        </div>
+    </div>
+    
+    <!-- Main Analysis Area -->
+    <div class="analysis-layout">
+        <!-- Visualization Container -->
+        <div class="visualization-box">
+            <div class="viz-header">
+                <h2 class="viz-title" id="viz-title">
+                    <i class="fas fa-table"></i>
+                    Data Preview
+                </h2>
+                <div class="viz-actions">
+                    <button class="btn btn-icon" id="fullscreen-btn" title="Fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button class="btn btn-success" id="export-btn">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+            <div class="viz-content" id="viz-content">
+                <!-- Loading Spinner -->
+                <div class="loading-spinner" id="loading-spinner">
+                    <div class="spinner"></div>
+                    <span>Loading data...</span>
+                </div>
+                <!-- Visualization will be inserted here -->
+                <div class="viz-result" id="viz-result"></div>
+            </div>
+            
+            <!-- Additional Info Panel (for stats, equations, etc.) -->
+            <div class="viz-info" id="viz-info" style="display: none;">
+                <div class="info-content" id="info-content"></div>
+            </div>
+        </div>
+        
+        <!-- Operation Panel -->
+        <div class="operation-panel">
+            <h3 class="panel-title">
+                <i class="fas fa-tools"></i>
+                Analysis Operations
+            </h3>
+            
+            <!-- Quick Actions -->
+            <div class="operation-group">
+                <h4 class="group-title">Quick Actions</h4>
+                <div class="operation-buttons">
+                    <button class="btn btn-operation active" data-operation="table">
+                        <i class="fas fa-table"></i>
+                        Data Table
+                    </button>
+                    <button class="btn btn-operation" data-operation="statistics">
+                        <i class="fas fa-calculator"></i>
+                        Statistics
+                    </button>
+                    <button class="btn btn-operation" data-operation="eda">
+                        <i class="fas fa-search-plus"></i>
+                        Full EDA
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Regression & Clustering -->
+            <div class="operation-group">
+                <h4 class="group-title">Analysis</h4>
+                <div class="operation-buttons">
+                    <button class="btn btn-operation" data-operation="linear_regression">
+                        <i class="fas fa-chart-line"></i>
+                        Linear Regression
+                    </button>
+                    <button class="btn btn-operation" data-operation="clustering">
+                        <i class="fas fa-project-diagram"></i>
+                        Clustering
+                    </button>
+                    <button class="btn btn-operation" data-operation="correlation">
+                        <i class="fas fa-th"></i>
+                        Correlation
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Visualizations -->
+            <div class="operation-group">
+                <h4 class="group-title">Visualizations</h4>
+                <div class="operation-buttons">
+                    <button class="btn btn-operation" data-operation="distribution">
+                        <i class="fas fa-chart-area"></i>
+                        Distribution
+                    </button>
+                    <button class="btn btn-operation" data-operation="scatter">
+                        <i class="fas fa-braille"></i>
+                        Scatter Plot
+                    </button>
+                    <button class="btn btn-operation" data-operation="histogram">
+                        <i class="fas fa-chart-bar"></i>
+                        Histogram
+                    </button>
+                    <button class="btn btn-operation" data-operation="boxplot">
+                        <i class="fas fa-box"></i>
+                        Box Plot
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Parameters Panel -->
+            <div class="parameters-panel" id="parameters-panel" style="display: none;">
+                <h4 class="group-title">
+                    <i class="fas fa-sliders-h"></i>
+                    Parameters
+                </h4>
+                <div class="parameters-content" id="parameters-content">
+                    <!-- Dynamic parameters will be inserted here -->
+                </div>
+                <button class="btn btn-primary btn-apply" id="apply-params-btn">
+                    <i class="fas fa-play"></i>
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden data -->
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+<input type="hidden" id="file-id" value="{{ file.id }}">
+<script>
+    // Pass column data to JavaScript
+    window.fileData = {
+        numericColumns: {{ numeric_columns|safe }},
+        categoricalColumns: {{ categorical_columns|safe }},
+        allColumns: {{ all_columns|safe }}
+    };
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/analysis.js' %}"></script>
+{% endblock %}

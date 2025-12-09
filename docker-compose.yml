@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lacrevette/cloud-web-project:latest
+    container_name: modelyourdata
+    ports:
+      - "80:80"
+    environment:
+      # Django settings
+      - DEBUG=False
+      - DJANGO_SETTINGS_MODULE=modelyourdata.settings
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      # Gunicorn settings
+      - GUNICORN_WORKERS=2
+      - GUNICORN_THREADS=4
+      - GUNICORN_TIMEOUT=120
+    volumes:
+      # Persist uploaded files and results
+      - media_data:/app/media
+      # Persist SQLite database
+      - db_data:/app/db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:80/')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  media_data:
+    driver: local
+  db_data:
+    driver: local

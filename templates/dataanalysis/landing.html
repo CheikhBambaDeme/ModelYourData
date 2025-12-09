@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ModelYourData - Upload Your Data{% endblock %}
+
+{% block content %}
+<div class="landing-container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <i class="fas fa-chart-pie"></i>
+                ModelYourData
+            </h1>
+            <p class="hero-subtitle">
+                Upload your CSV data and unlock powerful analytics instantly.
+                Visualize, analyze, and discover insights with ease.
+            </p>
+        </div>
+    </section>
+    
+    <!-- Upload Section -->
+    <section class="upload-section">
+        <div class="upload-card">
+            <h2 class="upload-title">
+                <i class="fas fa-cloud-upload-alt"></i>
+                Upload Your Data
+            </h2>
+            
+            <!-- Drag & Drop Zone -->
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-content">
+                    <i class="fas fa-file-csv dropzone-icon"></i>
+                    <p class="dropzone-text">Drag & drop your CSV file here</p>
+                    <span class="dropzone-divider">or</span>
+                    <label for="csv-file-input" class="btn btn-primary">
+                        <i class="fas fa-folder-open"></i>
+                        Browse Files
+                    </label>
+                    <input type="file" id="csv-file-input" accept=".csv" hidden>
+                </div>
+                <div class="dropzone-hint">
+                    <i class="fas fa-info-circle"></i>
+                    Maximum file size: 10MB | Supported format: CSV
+                </div>
+            </div>
+            
+            <!-- File Preview -->
+            <div class="file-preview" id="file-preview" style="display: none;">
+                <div class="file-info">
+                    <i class="fas fa-file-csv file-icon"></i>
+                    <div class="file-details">
+                        <span class="file-name" id="file-name"></span>
+                        <span class="file-size" id="file-size"></span>
+                    </div>
+                    <button type="button" class="btn-remove" id="remove-file">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <button type="button" class="btn btn-success btn-upload" id="upload-btn">
+                    <i class="fas fa-rocket"></i>
+                    Analyze Data
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container" id="progress-container" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span class="progress-text" id="progress-text">Uploading...</span>
+            </div>
+            
+            <!-- Error Message -->
+            <div class="error-message" id="error-message" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="error-text"></span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="features-title">Powerful Analysis Tools</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Linear Regression</h3>
+                <p>Discover relationships between variables with regression analysis.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <h3>Clustering</h3>
+                <p>Group similar data points using KMeans clustering.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h3>Distribution Analysis</h3>
+                <p>Visualize data distributions with histograms and density plots.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3>Statistical Summary</h3>
+                <p>Get comprehensive statistics about your dataset.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search-plus"></i>
+                </div>
+                <h3>Full EDA Report</h3>
+                <p>Generate complete exploratory data analysis reports.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-download"></i>
+                </div>
+                <h3>Export Results</h3>
+                <p>Download your visualizations in high-quality formats.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- CSRF Token -->
+<input type="hidden" id="csrf-token" value="{{ csrf_token }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/upload.js' %}"></script>
+{% endblock %}
