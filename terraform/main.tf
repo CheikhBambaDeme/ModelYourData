@@ -1,4 +1,3 @@
-# terraform/main.tf
 
 # Configure the Azure Provider
 terraform {
@@ -12,17 +11,12 @@ terraform {
 }
 
 # Configure the Microsoft Azure Provider
-# Uses Azure CLI authentication - run 'az login' before terraform commands
 provider "azurerm" {
   features {}
-  
-  # Uses Azure CLI authentication by default
-  # No Service Principal needed - just run 'az login' first
   subscription_id = var.subscription_id
 }
 
-# Create a Resource Group
-# A Resource Group is a container that holds related resources for an Azure solution
+# Resource Group
 resource "azurerm_resource_group" "main" {
   name     = var.resource_group_name
   location = var.location
@@ -33,8 +27,7 @@ resource "azurerm_resource_group" "main" {
   }
 }
 
-# Create a Public IP Address
-# This gives your VM a public IP that users can access
+# Public IP Address
 resource "azurerm_public_ip" "main" {
   name                = "${var.project_name}-public-ip"
   resource_group_name = azurerm_resource_group.main.name
@@ -48,14 +41,13 @@ resource "azurerm_public_ip" "main" {
   }
 }
 
-# Create a Network Security Group (NSG)
-# NSG acts as a virtual firewall for your VM
+# Network Security Group (NSG)
 resource "azurerm_network_security_group" "main" {
   name                = "${var.project_name}-nsg"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
-  # Allow SSH access (port 22) - restricted to your IP for security
+  # Allow SSH access (port 22) 
   security_rule {
     name                       = "SSH"
     priority                   = 1001
@@ -68,7 +60,7 @@ resource "azurerm_network_security_group" "main" {
     destination_address_prefix = "*"
   }
 
-  # Allow HTTP access (port 80) - open to everyone
+  # Allow HTTP access (port 80)
   security_rule {
     name                       = "HTTP"
     priority                   = 1002
@@ -87,8 +79,7 @@ resource "azurerm_network_security_group" "main" {
   }
 }
 
-# Create a Network Interface
-# This connects the VM to the network
+# Create a Network Interface and connects the VM to the network
 resource "azurerm_network_interface" "main" {
   name                = "${var.project_name}-nic"
   location            = azurerm_resource_group.main.location
@@ -113,7 +104,7 @@ resource "azurerm_network_interface_security_group_association" "main" {
   network_security_group_id = azurerm_network_security_group.main.id
 }
 
-# Create a Virtual Network (required even if we're keeping it simple)
+# Create a Virtual Network
 resource "azurerm_virtual_network" "main" {
   name                = "${var.project_name}-vnet"
   address_space       = ["10.0.0.0/16"]
@@ -140,8 +131,6 @@ resource "azurerm_linux_virtual_machine" "main" {
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   
-  # VM Size - Standard_B1s is good for learning (low cost)
-  # You can upgrade later if needed
   size                = var.vm_size
   
   # Admin username for SSH access
@@ -152,7 +141,7 @@ resource "azurerm_linux_virtual_machine" "main" {
     azurerm_network_interface.main.id,
   ]
 
-  # SSH key authentication (more secure than password)
+  # SSH key authentication
   admin_ssh_key {
     username   = var.admin_username
     public_key = var.ssh_public_key
@@ -192,7 +181,8 @@ resource "azurerm_linux_virtual_machine" "main" {
     systemctl enable docker
     
     # Add the admin user to the docker group
-    usermod -aG docker ${var.admin_username}
+    sudo usermod -aG docker ${var.admin_username}
+    newgrp docker
     
     # Create app directory
     mkdir -p /home/${var.admin_username}/app

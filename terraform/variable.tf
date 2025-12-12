@@ -1,9 +1,6 @@
-# terraform/variables.tf
 
-# Azure Authentication
-# Uses Azure CLI authentication - run 'az login' before terraform commands
 variable "subscription_id" {
-  description = "Azure Subscription ID (run: az account show --query id -o tsv)"
+  description = "Azure Subscription ID"
   type        = string
 }
 
@@ -23,7 +20,7 @@ variable "resource_group_name" {
 variable "location" {
   description = "Azure region for resources"
   type        = string
-  default     = "switzerlandnorth"  # Change to a region close to you
+  default     = "switzerlandnorth"
 }
 
 # VM Configuration
@@ -51,6 +48,5 @@ variable "ssh_public_key" {
 variable "ssh_source_address" {
   description = "IP address allowed to SSH into the VM (your IP)"
   type        = string
-  default     = "*"  # WARNING: Open to all. Recommended: set to your specific IP
-  # To find your IP: curl ifconfig.me
+  default     = "*"  
 }
