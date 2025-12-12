@@ -114,3 +114,7 @@ Thumbs.db
 media/
 staticfiles/
 *.sqlite3
+
+# terraform
+.terraform/
+terraform/
