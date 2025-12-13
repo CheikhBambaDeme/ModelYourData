@@ -194,12 +194,6 @@ ModelYourData/
 │   ├── uploads/              # Uploaded CSV files
 │   └── results/              # Generated visualizations
 │
-├── terraform/                # Infrastructure as Code
-│   ├── main.tf               # Main Terraform configuration
-│   ├── variables.tf          # Variable definitions
-│   ├── outputs.tf            # Output definitions
-│   └── terraform.tfvars      # Variable values (not committed)
-│
 └── .github/
     └── workflows/
         └── deploy.yml        # CI/CD pipeline
@@ -210,6 +204,8 @@ ModelYourData/
 ## Deployment Tutorial
 
 This tutorial explains how to reproduce the deployment from scratch.
+
+> **Note**: The Terraform files are not included in the GitHub repository. They have been sent to you separately via email as a zip file for easier management. Extract the zip to a location of your choice on your machine.
 
 ### Prerequisites
 
@@ -227,7 +223,7 @@ Before starting, ensure you have:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/CheikhBambaDeme/ModelYourData.git
+git clone https://github.com/CheikhBambaDeme/ModelYourDataTest.git
 cd ModelYourDataTest
 ```
 
@@ -254,7 +250,8 @@ az account show --query id -o tsv
 ### Step 4: Configure Terraform
 
 ```bash
-cd terraform
+# Navigate to where you extracted the Terraform zip file
+cd /path/to/your/terraform-folder
 
 # Edit terraform.tfvars with your values
 nano terraform.tfvars
@@ -269,7 +266,7 @@ subscription_id = "your-subscription-id"
 # Project settings
 project_name        = "modelyourdata"
 resource_group_name = "modelyourdata-rg"
-location            = "switzerlandnorth"
+location            = "westeurope"
 
 # VM settings
 vm_size        = "Standard_B1s"
@@ -317,6 +314,13 @@ ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', "localhost,127.0.0.1,0.0.0.0,20.
 
 # Example:
 # ALLOWED_HOSTS = ['20.xxx.xxx.xxx', 'localhost', '127.0.0.1']
+```
+
+Or use environment variables (recommended):
+```python
+import os
+
+ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 ```
 
 ### Step 7: Docker Hub Image
@@ -419,7 +423,8 @@ curl http://YOUR_VM_PUBLIC_IP
 To avoid ongoing charges, destroy the Azure resources when done:
 
 ```bash
-cd terraform
+# Navigate to where you extracted the Terraform zip file
+cd /path/to/your/terraform-folder
 terraform destroy
 # Type 'yes' when prompted
 ```
