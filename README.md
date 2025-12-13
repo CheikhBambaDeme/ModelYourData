@@ -227,8 +227,8 @@ Before starting, ensure you have:
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ModelYourData.git
-cd ModelYourData
+git clone https://github.com/CheikhBambaDeme/ModelYourData.git
+cd ModelYourDataTest
 ```
 
 ### Step 2: Generate SSH Key Pair
@@ -269,7 +269,7 @@ subscription_id = "your-subscription-id"
 # Project settings
 project_name        = "modelyourdata"
 resource_group_name = "modelyourdata-rg"
-location            = "westeurope"
+location            = "switzerlandnorth"
 
 # VM settings
 vm_size        = "Standard_B1s"
@@ -313,58 +313,51 @@ Add the VM's public IP address to the `ALLOWED_HOSTS` in your Django settings fi
 ```python
 # modelyourdata/settings.py
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', "localhost,127.0.0.1,0.0.0.0,20.250.42.186,'THE-IP-OF-THE-VM    '").split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', "localhost,127.0.0.1,0.0.0.0,20.250.42.186,'THE-IP-OF-THE-VM '").split(',')
 
 # Example:
 # ALLOWED_HOSTS = ['20.xxx.xxx.xxx', 'localhost', '127.0.0.1']
 ```
 
-Or use environment variables (recommended):
-```python
-import os
+### Step 7: Docker Hub Image
 
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-```
+This project uses the existing public Docker Hub image: `lacrevette/django-cloud`
 
-### Step 7: Create Docker Hub Repository
+No need to create your own repository. The image is already available and configured.
 
-1. Go to [Docker Hub](https://hub.docker.com/)
-2. Click **Create Repository**
-3. Name it `modelyourdata`
-4. Set visibility to **Public**
+You can view the image at: [https://hub.docker.com/r/lacrevette/django-cloud](https://hub.docker.com/r/lacrevette/django-cloud)
 
-> **Alternative**: You can skip Steps 7-9 and use the existing public image `lacrevette/django-cloud` (lacrevette is my user name(Cheikh DEME)) instead of building your own. WE RECOMMAND THIS !!!
+### Step 8: GitHub Actions CI/CD
 
-### Step 8: Create Docker Hub Access Token
+The CI/CD pipeline is already configured in the repository. You can view the workflow runs at:
 
-1. Go to Docker Hub → **Account Settings** → **Security**
-2. Click **New Access Token**
-3. Name it "GitHub Actions"
-4. Copy the token (shown only once!)
+[https://github.com/CheikhBambaDeme/ModelYourDataTest/actions](https://github.com/CheikhBambaDeme/ModelYourDataTest/actions)
+
+The pipeline automatically builds and deploys when changes are pushed to the main branch.
 
 ### Step 9: Configure GitHub Secrets
 
-Go to your GitHub repository → **Settings** → **Secrets and variables** → **Actions**
+Go to the GitHub repository → **Settings** → **Secrets and variables** → **Actions**
 
-Add these secrets:
+Update these two secrets with your new VM information:
 
 | Secret Name | Value |
 |-------------|-------|
-| `DOCKERHUB_USERNAME` | Your Docker Hub username |
-| `DOCKERHUB_TOKEN` | Access token from Step 8 |
-| `VM_HOST` | Public IP from Terraform output |
-| `VM_USERNAME` | `azureuser` |
-| `VM_SSH_PRIVATE_KEY` | Content of `~/.ssh/azure_vm_key` |
-| `DJANGO_SECRET_KEY` | Generate with: `openssl rand -base64 50` |
+| `VM_HOST` | Public IP from Terraform output (Step 5) |
+| `VM_SSH_PRIVATE_KEY` | Content of `~/.ssh/azure_vm_key` (your private key) |
 
-### Step 10: Update GitHub Actions Workflow
-
-In `.github/workflows/deploy.yml`, update the Docker image name:
-
-```yaml
-env:
-  DOCKER_IMAGE: lacrevette/django-cloud
+To get your private key content:
+```bash
+cat ~/.ssh/azure_vm_key
 ```
+
+Copy the entire output including `-----BEGIN OPENSSH PRIVATE KEY-----` and `-----END OPENSSH PRIVATE KEY-----` lines.
+
+### Step 10: GitHub Actions Workflow
+
+The workflow file `.github/workflows/deploy.yml` is already configured. No changes needed.
+
+It is set to use the Docker image: `lacrevette/django-cloud`
 
 ### Step 11: Deploy!
 
@@ -385,26 +378,13 @@ This triggers the GitHub Actions workflow which:
 
 ```bash
 # Check GitHub Actions (should show green checkmarks)
-# Go to: https://github.com/YOUR_USERNAME/ModelYourData/actions
+# Go to: https://github.com/CheikhBambaDeme/ModelYourDataTest/actions
 
 # Access your website
 curl http://YOUR_VM_PUBLIC_IP
 
 # Or open in browser
 # http://YOUR_VM_PUBLIC_IP
-```
-
-### Step 13: (Optional) SSH into VM for Debugging
-
-```bash
-# Connect to VM
-ssh -i ~/.ssh/azure_vm_key azureuser@YOUR_VM_PUBLIC_IP
-
-# Check container status
-docker ps
-
-# View container logs
-docker logs django_app
 ```
 
 ---
